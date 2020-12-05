@@ -11,7 +11,7 @@ def create_or_get_database():
 def create_table_user(conex):
     sql = '''
         CREATE TABLE IF NOT EXISTS user (
-            name VARCHAR NOT NULL,
+            name VARCHAR(100),
             email TEXT NOT NULL,
             password TEXT NOT NULL,
             is_logged INT DEFAULT 0,
@@ -57,10 +57,69 @@ def principal_menu(conex):
     print('3 - Salir del programa')
     option = int(input('Ingrese la opcion de lo que quiera realizar: '))
     if validate_user_selection(option, 3):
-        print("si se pudo")
+        selection_principal(option, conex)
     else:
         print('El valor que ingresaste no es valido')
         principal_menu(conex)
+
+# Metodo para llevar a cada opcion del menu principal
+def selection_principal(option, conex):
+    if option == 1:
+        log_in(conex)
+    elif option == 2:
+        sign_in(conex)
+    else:
+        pass
+
+# Metodo para iniciar sesion
+def log_in(conex):
+    email = input('Ingresa tu email: ')
+    password = input('Ingresa una contrasena: ')
+
+    try:
+        sql = '''
+            UPDATE user 
+            SET
+                is_logged = 1
+            WHERE 
+                email = ?
+            AND 
+                password = ?    
+        '''
+        values = (email, password)
+        cursor = conex.execute(sql, values)
+        conex.commit
+
+        if cursor.rowcount < 1:
+            print('Error al iniciar sesion :(')
+        else:
+            print('Usuario ha iniciado sesion correctamente')
+    except Exception as e:
+        print('Algo salio mal durante el inicio de sesion')
+        print(e)
+        print()
+
+# Metodo para registrarse
+def sign_in(conex):
+    name = input('Ingresa tu nombre completo: ')
+    email = input('Ingresa tu email: ')
+    password = input('Ingresa una contrasena: ')
+    print()
+
+    sql = '''
+        INSERT INTO
+        user (name, email, password)
+        VALUES (?, ?, ?)
+    '''
+    values = (name, email, password)
+    
+    conex.execute(sql, values)
+    conex.commit()
+
+    print('>>>>>Usuario creado correctamente!')
+    principal_menu(conex)
+
+
 
 # Metodo para validar la opcion
 def validate_user_selection(option, options):
