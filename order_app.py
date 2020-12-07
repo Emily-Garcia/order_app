@@ -44,7 +44,7 @@ def selection_principal(option, conex):
     elif option == 2:
         see_dishes(conex)
     elif option == 3:
-        pass
+        update_dish(conex)
     elif option == 4:
         pass
     else:
@@ -72,7 +72,7 @@ def create_dish(conex):
     conex.execute(sql, values)
     conex.commit()
 
-    print('Platillo creado correctamete!')
+    print('PLATILLO CREADO!')
     print('-----------------------------')
     principal_menu(conex)
 
@@ -81,7 +81,7 @@ def see_dishes(conex):
     print('--- VER PLATILLOS ----')
     sql = '''
     SELECT
-        name, description, price, is_available, timestamp
+        rowid, name, description, price, is_available, timestamp
     FROM
         dish
     '''
@@ -89,13 +89,60 @@ def see_dishes(conex):
 
     for row in cursor:
         print('* * *')
-        print(f'Nombre: {row[0]}')
-        print(f'Descripción: {row[1]}')
-        print(f'Precio: {row[2]}')
-        print(f'Platillos disponibles: {row[3]}')
-        print(f'Última actualización: {row[4]}')
+        print(f'ID: {row[0]}')
+        print(f'Nombre: {row[1]}')
+        print(f'Descripción: {row[2]}')
+        print(f'Precio: {row[3]}')
+        print(f'Platillos disponibles: {row[4]}')
+        print(f'Última actualización: {row[5]}')
 
     print('-------------------------')
+    principal_menu(conex)
+
+# Método para actualizar un platillo
+def update_dish(conex):
+    print('--- ACTUALIZAR PLATILLO ---')
+    rowid = input('Ingresa el ID del platilo que se quiere editar: ')
+    print('Columnas:')
+    print('1. Nombre')
+    print('2. Descripción')
+    print('3. Precio')
+    print('4. Platillos disponibles')
+    num_column = int( input('Ingresa el número de la columna que quieres actualizar: '))
+    if num_column == 1:
+        column = 'name'
+    elif num_column == 2:
+        column = 'description'
+    elif num_column == 3:
+        column = 'price'
+    elif num_column == 4:
+        column = 'is_available'
+    else:
+        print('>>> La opción que ingresaste no es válido, ingresa de nuevo los datos.<<<')
+        update_dish(conex)
+
+    new_value = input('Ingresa el nuevo valor de dicha columna: ')
+
+    try:
+        sql = f'''
+            UPDATE dish
+            SET
+                {column} = ?
+            WHERE
+                rowid = ?
+        '''
+        values = (new_value, rowid)
+        cursor = conex.execute(sql, values)
+        conex.commit()
+
+        if cursor.rowcount < 1:
+            print('No se actualizó el platillo correctamente')
+        else:
+            print('PLATILLO ACTUALIZADO!')
+    except Exception as e:
+        print('Ocurrio un error durante la actualización')
+        print(e)
+    print('--------------------------------')
     principal_menu(conex)
 
 
