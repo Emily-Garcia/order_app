@@ -8,7 +8,7 @@ def create_or_get_database():
     print('BASE DE DATOS CONECTADO CORRECTAMENTE :)')
     return conex
 
-# Metodos para crear las tablas
+# Métodos para crear las tablas
 def create_table_dish(conex):
     sql = '''
         CREATE TABLE IF NOT EXISTS dish (
@@ -22,10 +22,9 @@ def create_table_dish(conex):
     conex.execute(sql)
     print('Tabla DISH creada correctamente')
 
-# Metodo del menu principal
+# Método del menu principal
 def principal_menu(conex):
-    print('\n')
-    print('MENU')
+    print('MENÚ')
     print('1 - Crear platillo')
     print('2 - Ver platillos')
     print('3 - Actualizar platillo')
@@ -35,15 +34,15 @@ def principal_menu(conex):
     if validate_user_selection(option):
         selection_principal(option, conex)
     else:
-        print('El valor que ingresaste no es valido')
+        print('El valor que ingresaste no es válido')
         principal_menu(conex)
 
-# Metodo para llevar a cada opcion del menu principal
+# Método para llevar a cada opcion del menu principal
 def selection_principal(option, conex):
     if option == 1:
         create_dish(conex)
     elif option == 2:
-        pass
+        see_dishes(conex)
     elif option == 3:
         pass
     elif option == 4:
@@ -51,11 +50,11 @@ def selection_principal(option, conex):
     else:
         pass
 
-# Metodo para validar la opcion
+# Método para validar la opcion
 def validate_user_selection(option):
     return isinstance(option, int) and option > 0 and option <=5
 
-# Metodo para crear un platillo
+# Método para crear un platillo
 def create_dish(conex):
     print('--- CREAR PLATILLO ---')
     name = input('Ingresa el nombre: ')
@@ -73,11 +72,34 @@ def create_dish(conex):
     conex.execute(sql, values)
     conex.commit()
 
-    print('Usuario creado correctamete!')
+    print('Platillo creado correctamete!')
     print('-----------------------------')
     principal_menu(conex)
 
-# Metodo principal
+# Método para ver los platillos
+def see_dishes(conex):
+    print('--- VER PLATILLOS ----')
+    sql = '''
+    SELECT
+        name, description, price, is_available, timestamp
+    FROM
+        dish
+    '''
+    cursor = conex.execute(sql)
+
+    for row in cursor:
+        print('* * *')
+        print(f'Nombre: {row[0]}')
+        print(f'Descripción: {row[1]}')
+        print(f'Precio: {row[2]}')
+        print(f'Platillos disponibles: {row[3]}')
+        print(f'Última actualización: {row[4]}')
+
+    print('-------------------------')
+    principal_menu(conex)
+
+
+# Método principal
 def main():
     conex = create_or_get_database()
     create_table_dish(conex)
