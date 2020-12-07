@@ -46,7 +46,7 @@ def selection_principal(option, conex):
     elif option == 3:
         update_dish(conex)
     elif option == 4:
-        pass
+        delete_dish(conex)
     else:
         pass
 
@@ -56,6 +56,7 @@ def validate_user_selection(option):
 
 # Método para crear un platillo
 def create_dish(conex):
+    print()
     print('--- CREAR PLATILLO ---')
     name = input('Ingresa el nombre: ')
     description = input('Ingresa una descripción: ')
@@ -78,6 +79,7 @@ def create_dish(conex):
 
 # Método para ver los platillos
 def see_dishes(conex):
+    print()
     print('--- VER PLATILLOS ----')
     sql = '''
     SELECT
@@ -101,8 +103,9 @@ def see_dishes(conex):
 
 # Método para actualizar un platillo
 def update_dish(conex):
+    print()
     print('--- ACTUALIZAR PLATILLO ---')
-    rowid = input('Ingresa el ID del platilo que se quiere editar: ')
+    rowid = input('Ingresa el ID del platilo: ')
     print('Columnas:')
     print('1. Nombre')
     print('2. Descripción')
@@ -145,6 +148,27 @@ def update_dish(conex):
     print('--------------------------------')
     principal_menu(conex)
 
+# Método para eliminar platillo
+def delete_dish(conex):
+    print()
+    print('--- ELIMINAR PLATILLO ---')
+    rowid = input('Ingrese el ID del platillo: ')
+
+    try:
+        sql = '''
+            DELETE FROM dish
+            WHERE
+                rowid = ?
+        '''
+        values = (rowid)
+        conex.execute(sql, values)
+        conex.commit()
+        print('PLATILLO ELIMINADO')
+    except Exception as e:
+        print('Hubo un error al eliminar el platillo.')
+        print(e)
+    print('----------------------------')
+    principal_menu(conex)
 
 # Método principal
 def main():
